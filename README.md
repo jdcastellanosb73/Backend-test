@@ -8,17 +8,17 @@ test backend for Crosspay Solutions S.A.S.
 ![JWT](https://img.shields.io/badge/JWT-Authentication-orange)
 
 
-## 📌 Funcionalidades
+##  Funcionalidades
 
-- ✅ **Autenticación segura** con JWT (login de usuarios).
-- 💳 **Gestión de tarjetas**: registro, listado y eliminación.
-- 💸 **Flujo de transacciones**: crear pagos con tarjeta (simulación).
-- 🔒 **Seguridad**: cada usuario solo ve y gestiona sus propias tarjetas y transacciones.
-- 📊 **Panel de usuario**: historial de transacciones con filtros (fecha, tipo, categoría).
-- 🗑️ **Eliminación segura**: no se pueden borrar transacciones de otros usuarios.
+-  **Autenticación segura** con JWT (login de usuarios).
+-  **Gestión de tarjetas**: registro, listado y eliminación.
+- **Flujo de transacciones**: crear pagos con tarjeta (simulación).
+-  **Seguridad**: cada usuario solo ve y gestiona sus propias tarjetas y transacciones.
+-  **Panel de usuario**: historial de transacciones con filtros (fecha, tipo, categoría).
+- **Eliminación segura**: no se pueden borrar transacciones de otros usuarios.
 
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
 | Capa | Tecnología | Justificación |
 |------|-----------|---------------|
@@ -30,7 +30,7 @@ test backend for Crosspay Solutions S.A.S.
 
 
 
-## 📦 Instalación y configuración
+##  Instalación y configuración
 
 ### Requisitos previos
 - Node.js v18+
