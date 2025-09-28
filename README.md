@@ -42,8 +42,12 @@ test backend for Crosspay Solutions S.A.S.
    ```bash
    git clone https://github.com/jdcastellanosb73/Backend-test.git
    cd Backend-test
-   npm -i
-
+2. **Instala dependencias**
+   ```bash
+   npm install
+2. **correr el repositorio**
+   ```bash
+   npm run dev
 
 src/
 ├── controllers/    # Lógica de manejo de peticiones
