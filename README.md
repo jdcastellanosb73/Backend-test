@@ -51,7 +51,7 @@ src/
 ├── routes/         # Definición de endpoints
 ├── middleware/     # Autenticación y validación
 ├── config/         # Conexión a PostgreSQL
-└── app.js          # Configuración principal de Express
-
+├── app.js          # Configuración principal de Express, carga rutas y middleware.
+└── server.js       # Arranca el servidor
 
 
