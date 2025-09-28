@@ -48,7 +48,7 @@ test backend for Crosspay Solutions S.A.S.
 3. **correr el repositorio**
    ```bash
    npm run dev
-
+```
 src/
 ├── controllers/    # Lógica de manejo de peticiones
 ├── services/       # Lógica de negocio
@@ -56,6 +56,6 @@ src/
 ├── middleware/     # Autenticación y validación
 ├── config/         # Conexión a PostgreSQL
 ├── app.js          # Configuración principal de Express, carga rutas y middleware.
-└── server.js       # Arranca el servidor
+└── server.js       # Arranca el servidor```
 
 
