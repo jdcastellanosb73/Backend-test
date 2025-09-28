@@ -45,7 +45,7 @@ test backend for Crosspay Solutions S.A.S.
 2. **Instala dependencias**
    ```bash
    npm install
-2. **correr el repositorio**
+3. **correr el repositorio**
    ```bash
    npm run dev
 
