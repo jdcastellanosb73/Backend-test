@@ -42,6 +42,7 @@ test backend for Crosspay Solutions S.A.S.
    ```bash
    git clone https://github.com/jdcastellanosb73/Backend-test.git
    cd Backend-test
+   npm -i
 
 
 src/
