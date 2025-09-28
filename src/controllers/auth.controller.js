@@ -20,15 +20,15 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { emailOrUsername, password } = req.body;
 
-    if (!username || !password) {
+    if (!emailOrUsername || !password) {
       return res.status(400).json({
-        message: "Faltan campos obligatorios: username y password"
+        message: "Faltan campos obligatorios: emailOrUsername y password"
       });
     }
 
-    const result = await loginUserService(username, password);
+    const result = await loginUserService(emailOrUsername, password);
     res.status(200).json(result);
   } catch (error) {
     console.error("Error en loginUser:", error);

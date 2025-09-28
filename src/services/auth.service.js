@@ -19,27 +19,32 @@ export const registerUserService = async (username, email, full_name, password) 
   return rows[0];
 };
 
-export const loginUserService = async (username, password) => {
-  const query = `
-    SELECT id, username, password_hash 
-    FROM users 
-    WHERE username = $1
-  `;
-  const { rows } = await pool.query(query, [username]);
+export const loginUserService = async (emailOrUsername, password) => {
+  const isEmail = emailOrUsername.includes('@');
 
-  if (rows.length === 0) throw new Error("Usuario no encontrado");
+  const query = isEmail
+    ? `SELECT id, username, password_hash FROM users WHERE email = $1`
+    : `SELECT id, username, password_hash FROM users WHERE username = $1`;
+
+  const { rows } = await pool.query(query, [emailOrUsername]);
+
+  if (rows.length === 0) {
+    throw new Error("Usuario no encontrado");
+  }
 
   const user = rows[0];
   const validPassword = await bcrypt.compare(password, user.password_hash);
 
-  if (!validPassword) throw new Error("Contraseña incorrecta");
+  if (!validPassword) {
+    throw new Error("Contraseña incorrecta");
+  }
 
   const token = generateToken(user);
-  return { 
-    user: { 
-      id: user.id, 
-      username: user.username 
-    }, 
-    token 
+  return {
+    user: {
+      id: user.id,
+      username: user.username
+    },
+    token
   };
 };
