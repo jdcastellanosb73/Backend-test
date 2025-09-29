@@ -1,8 +1,6 @@
 import pool from '../config/database.js';
 
 export const createTransactionService = async (data, userId) => {
-  console.log("🔧 SERVICE - Datos recibidos:", JSON.stringify(data, null, 2));
-  console.log("🔧 SERVICE - User ID:", userId);
 
   const {
     currency,
@@ -31,40 +29,31 @@ export const createTransactionService = async (data, userId) => {
   `;
 
   const values = [
-    currency,           // $1
-    amount,            // $2
-    description,       // $3
-    full_name,         // $4
-    document_type,     // $5
-    numero_documento,  // $6
-    card_number,       // $7
-    cvv,              // $8
-    expiration_date,   // $9
-    userId,           // $10
-    type,             // $11
-    category,         // $12
-    status,           // $13
-    reference,        // $14
-    metadata ? JSON.stringify(metadata) : null  // $15
+    currency,          
+    amount,            
+    description,       
+    full_name,         
+    document_type,     
+    numero_documento,  
+    card_number,       
+    cvv,              
+    expiration_date,   
+    userId,           
+    type,             
+    category,         
+    status,           
+    reference,        
+    metadata ? JSON.stringify(metadata) : null  
   ];
-
-  console.log("🔧 SERVICE - Query:", query);
-  console.log("🔧 SERVICE - Values:", values);
 
   try {
     const { rows } = await pool.query(query, values);
-    console.log("✅ SERVICE - Transacción insertada:", rows[0]);
     return rows[0];
   } catch (error) {
-    console.error("🚨 SERVICE - Error en query:", error);
-    console.error("🚨 SERVICE - Error code:", error.code);
-    console.error("🚨 SERVICE - Error detail:", error.detail);
-    console.error("🚨 SERVICE - Error message:", error.message);
     throw error;
   }
 };
 
-// ==================== SERVICIO: OBTENER TRANSACCIONES ====================
 export const getTransactionsByUserService = async (userId, filters = {}) => {
   let query = `
     SELECT * FROM transactions 
@@ -127,7 +116,6 @@ export const getTransactionsByUserService = async (userId, filters = {}) => {
     const { rows } = await pool.query(query, values);
     return rows;
   } catch (error) {
-    console.error("🚨 Error en getTransactionsByUserService:", error);
     throw error;
   }
 };

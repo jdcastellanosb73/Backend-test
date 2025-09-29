@@ -11,20 +11,15 @@ export const createTransactionController = async (req, res) => {
   try {
     const userId = req.user?.id;
     
-    console.log("🔍 DEBUG - User ID del token:", userId);
-    
     if (!userId) {
       return res.status(401).json({ message: "Usuario no autenticado" });
     }
 
     const userCheck = await pool.query("SELECT id FROM users WHERE id = $1", [userId]);
-    console.log("🔍 DEBUG - Usuario encontrado:", userCheck.rows);
     
     if (userCheck.rows.length === 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-
-    console.log("🔍 DEBUG - Body recibido:", JSON.stringify(req.body, null, 2));
 
     const {
       currency,
@@ -42,7 +37,6 @@ export const createTransactionController = async (req, res) => {
       metadata
     } = req.body;
 
-    // Campos obligatorios (numero_documento NO es obligatorio)
     const requiredFields = {
       currency,
       amount,
@@ -56,47 +50,36 @@ export const createTransactionController = async (req, res) => {
       category
     };
 
-    console.log("🔍 DEBUG - Campos requeridos:", requiredFields);
 
-    // Validación de campos obligatorios
     for (const [field, value] of Object.entries(requiredFields)) {
       if (value === undefined || value === null || value === '') {
-        console.log(`❌ Campo faltante: ${field} = ${value}`);
         return res.status(400).json({
           message: `El campo '${field}' es obligatorio`
         });
       }
     }
 
-    // Validación del monto
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
-      console.log("❌ Monto inválido:", amount);
       return res.status(400).json({ message: "El monto debe ser un número positivo" });
     }
 
-    // Validación de currency
     const validCurrencies = ['USD', 'COP'];
     if (!validCurrencies.includes(currency)) {
-      console.log("❌ Currency inválida:", currency);
       return res.status(400).json({ 
         message: "La moneda debe ser USD o COP" 
       });
     }
 
-    // Validación de tipo de documento
     const validDocumentTypes = ['CC', 'PP', 'DNI'];
     if (!validDocumentTypes.includes(document_type)) {
-      console.log("❌ Document type inválido:", document_type);
       return res.status(400).json({ 
         message: "El tipo de documento debe ser CC, PP o DNI" 
       });
     }
 
-    // Validación de tipo de transacción
     const validTransactionTypes = ['withdrawal', 'payment'];
     if (!validTransactionTypes.includes(type)) {
-      console.log("❌ Type inválido:", type);
       return res.status(400).json({ 
         message: "El tipo de transacción debe ser 'withdrawal' o 'payment'" 
       });
@@ -118,23 +101,13 @@ export const createTransactionController = async (req, res) => {
       metadata: metadata || null
     };
 
-    console.log("✅ Datos validados, enviando al servicio:", JSON.stringify(transactionData, null, 2));
-
     const transaction = await createTransactionService(transactionData, userId);
-
-    console.log("✅ Transacción creada:", transaction);
 
     return res.status(201).json({
       message: "Transacción creada con éxito",
       data: transaction
     });
   } catch (error) {
-    console.error("🚨 Error DETALLADO creando transacción:", error);
-    console.error("🚨 Stack trace:", error.stack);
-    console.error("🚨 Error code:", error.code);
-    console.error("🚨 Error message:", error.message);
-    
-    // Manejo específico de errores de PostgreSQL
     if (error.code === '23505') {
       return res.status(409).json({ 
         message: "Ya existe una transacción con esos datos" 
@@ -176,7 +149,6 @@ export const getTransactionsController = async (req, res) => {
       data: transactions
     });
   } catch (error) {
-    console.error("❌ Error obteniendo transacciones:", error);
     res.status(500).json({ message: "Error al obtener transacciones" });
   }
 };
