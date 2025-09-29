@@ -5,6 +5,7 @@ import {
   getSummaryService,
   getStatsService
 } from "../services/transactions.service.js";
+import pool from '../config/database.js';
 
 export const createTransactionController = async (req, res) => {
   try {
@@ -13,46 +14,115 @@ export const createTransactionController = async (req, res) => {
       return res.status(401).json({ message: "Usuario no autenticado" });
     }
 
+    const userCheck = await pool.query("SELECT id FROM users WHERE id = $1", [userId]);
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
     const {
       currency,
       amount,
       description,
       full_name,
       document_type,
-      Numero_documento,  
+      numero_documento, 
       card_number,
       cvv,
       expiration_date,
       type,
-      category
+      category,
+      reference, 
+      metadata   
     } = req.body;
 
-    if (
-      !currency || 
-      amount == null || 
-      !description || 
-      !full_name || 
-      !document_type || 
-      !Numero_documento ||  
-      !card_number || 
-      !cvv || 
-      !expiration_date || 
-      !type || 
-      !category
-    ) {
-      return res.status(400).json({
-        message: "Faltan campos obligatorios en la transacción"
+    const requiredFields = [
+      'currency', 'amount', 'description', 'full_name',
+      'document_type', 'card_number', 'cvv', 'expiration_date', 
+      'type', 'category'
+    ];
+
+    for (const field of requiredFields) {
+      if (req.body[field] === undefined || req.body[field] === null || req.body[field] === '') {
+        return res.status(400).json({
+          message: `El campo '${field}' es obligatorio`
+        });
+      }
+    }
+
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ message: "El monto debe ser un número positivo" });
+    }
+
+    const validCurrencies = ['USD', 'COP'];
+    if (!validCurrencies.includes(currency)) {
+      return res.status(400).json({ 
+        message: "La moneda debe ser USD o COP" 
       });
     }
 
-    const transaction = await createTransactionService(req.body, userId);
-    res.status(201).json({
+    const validDocumentTypes = ['CC', 'PP', 'DNI'];
+    if (!validDocumentTypes.includes(document_type)) {
+      return res.status(400).json({ 
+        message: "El tipo de documento debe ser CC, PP o DNI" 
+      });
+    }
+
+    const validTransactionTypes = ['withdrawal', 'payment'];
+    if (!validTransactionTypes.includes(type)) {
+      return res.status(400).json({ 
+        message: "El tipo de transacción debe ser 'withdrawal' o 'payment'" 
+      });
+    }
+
+    const expirationRegex = /^(\d{2}\/\d{2}|\d{4}-\d{2}-\d{2})$/;
+    if (!expirationRegex.test(expiration_date)) {
+      return res.status(400).json({ 
+        message: "La fecha de expiración debe tener formato MM/YY o YYYY-MM-DD" 
+      });
+    }
+
+    const transactionData = {
+      currency,
+      amount: amountNum,
+      description,
+      full_name,
+      document_type,
+      numero_documento: numero_documento || null, 
+      card_number,
+      cvv,
+      expiration_date,
+      type,
+      category,
+      reference: reference || null,
+      metadata: metadata || null
+    };
+
+    const transaction = await createTransactionService(transactionData, userId);
+
+    return res.status(201).json({
       message: "Transacción creada con éxito",
       data: transaction
     });
   } catch (error) {
-    console.error("Error creando transacción:", error);
-    res.status(500).json({ message: "Error al crear transacción" });
+    console.error("🚨 Error DETALLADO creando transacción:", error);
+    
+    if (error.code === '23505') {
+      return res.status(409).json({ 
+        message: "Ya existe una transacción con esos datos" 
+      });
+    }
+    
+    if (error.code === '23503') {
+      return res.status(400).json({ 
+        message: "Error de referencia en la base de datos" 
+      });
+    }
+    
+    return res.status(500).json({ 
+      message: "Error interno al crear la transacción",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

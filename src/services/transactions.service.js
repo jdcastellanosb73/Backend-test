@@ -7,22 +7,23 @@ export const createTransactionService = async (data, userId) => {
     description,
     full_name,
     document_type,
-    Numero_documento, 
+    numero_documento,
     card_number,
     cvv,
     expiration_date,
     type,
     category,
-    status = "done",
     reference,
-    metadata
+    metadata,
+    status = "done" 
   } = data;
 
   const query = `
     INSERT INTO transactions (
-      currency, amount, description, full_name, document_type, Numero_documento,
-      card_number, cvv, expiration_date, user_id, type, category, status, reference, metadata, created_at
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,NOW())
+      currency, amount, description, full_name, document_type, 
+      numero_documento, card_number, cvv, expiration_date, 
+      user_id, type, category, status, reference, metadata, created_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
     RETURNING *;
   `;
 
@@ -32,7 +33,7 @@ export const createTransactionService = async (data, userId) => {
     description,
     full_name,
     document_type,
-    Numero_documento, 
+    numero_documento, 
     card_number,
     cvv,
     expiration_date,
@@ -40,12 +41,17 @@ export const createTransactionService = async (data, userId) => {
     type,
     category,
     status,
-    reference,
-    metadata ? JSON.stringify(metadata) : null
+    reference, 
+    metadata ? JSON.stringify(metadata) : null 
   ];
 
-  const { rows } = await pool.query(query, values);
-  return rows[0];
+  try {
+    const { rows } = await pool.query(query, values);
+    return rows[0];
+  } catch (error) {
+    console.error("🚨 Error en createTransactionService:", error);
+    throw error;
+  }
 };
 
 
