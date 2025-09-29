@@ -13,7 +13,7 @@ const config = {
   port: process.env.PG_PORT ? parseInt(process.env.PG_PORT, 10) : 5432,
 };
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.PG_HOST !== 'localhost' && process.env.PG_HOST !== '127.0.0.1') {
   config.ssl = {
     rejectUnauthorized: false
   };
@@ -22,11 +22,14 @@ if (process.env.NODE_ENV === 'production') {
 const pool = new Pool(config);
 
 pool.on('connect', () => {
-  console.log('Conectado a PostgreSQL');
+  console.log('✅ Conectado a PostgreSQL');
+  console.log('   Host:', process.env.PG_HOST);
+  console.log('   Database:', process.env.PG_DATABASE);
+  console.log('   SSL:', config.ssl ? 'Habilitado' : 'Deshabilitado');
 });
 
 pool.on('error', (err) => {
-  console.error('Error en la conexión a PostgreSQL:', err);
+  console.error('❌ Error en la conexión a PostgreSQL:', err);
   process.exit(-1);
 });
 
