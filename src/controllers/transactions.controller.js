@@ -19,6 +19,7 @@ export const createTransactionController = async (req, res) => {
       description,
       full_name,
       document_type,
+      Numero_documento,  
       card_number,
       cvv,
       expiration_date,
@@ -32,6 +33,7 @@ export const createTransactionController = async (req, res) => {
       !description || 
       !full_name || 
       !document_type || 
+      !Numero_documento ||  
       !card_number || 
       !cvv || 
       !expiration_date || 
@@ -53,6 +55,7 @@ export const createTransactionController = async (req, res) => {
     res.status(500).json({ message: "Error al crear transacción" });
   }
 };
+
 
 export const getTransactionsController = async (req, res) => {
   try {
